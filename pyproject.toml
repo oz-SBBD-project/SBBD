@@ -7,6 +7,7 @@ requires-python = ">=3.13"
 dependencies = [
     "django>=6.0.2",
     "djangorestframework>=3.16.1",
+    "drf-spectacular>=0.29.0",
     "pip>=26.0.1",
     "psycopg[binary]>=3.3.3",
     "python-dotenv>=1.2.1",
@@ -16,3 +17,21 @@ dependencies = [
 dev = [
     "ruff>=0.15.1",
 ]
+
+[tool.ruff]
+# 한 줄의 최대 길이 (보통 88 또는 100 사용)
+line-length = 100
+
+# 검사할 규칙 설정 (E, F는 기본, I는 import 정렬)
+lint.select = ["E", "F", "I", "N", "UP"]
+lint.ignore = []
+
+# 절대 삭제하면 안 되는 자동 수정 기능 설정
+lint.fixable = ["ALL"]
+
+[tool.ruff.lint.isort]
+# 장고 프로젝트에서 import 순서를 예쁘게 맞춰줍니다.
+known-first-party = ["config", "apps"]
+
+[tool.ruff.lint.pycodestyle]
+max-doc-length = 120
