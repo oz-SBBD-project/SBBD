@@ -18,10 +18,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     "rest_framework",
-
     "apps.accounts",
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -40,11 +39,12 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("DB_NAME", "sbbd"),
-        "USER": os.getenv("DB_USER", "sbbd"),
-        "PASSWORD": os.getenv("DB_PASSWORD", "sbbd"),
-        "HOST": os.getenv("DB_HOST", "db"),
-        "PORT": "5432",
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        # 로컬(uv run)에서는 127.0.0.1, 도커 내부에서는 db가 들어가야 합니다.
+        "HOST": os.getenv("DB_HOST"),
+        "PORT": os.getenv("DB_PORT"),
     }
 }
 
@@ -54,3 +54,23 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',      # 필수
+                'django.contrib.messages.context_processors.messages', # 필수
+            ],
+        },
+    },
+]
