@@ -41,3 +41,6 @@ EXPOSE 8000
 
 # 8. run.sh 실행
 CMD ["/scripts/run.sh"]
+
+
+
