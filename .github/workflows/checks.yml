@@ -47,6 +47,16 @@ jobs:
     - name: Install Packages & Libraries
       run: uv sync --dev
 
+    - name: Wait for Postgres
+      run: |
+        for i in {1..30}; do
+        nc -z 127.0.0.1 5432 && echo "Postgres is ready" && exit 0
+        echo "Waiting for postgres..."
+        sleep 2
+        done
+        echo "Postgres failed to start"
+        exit 1
+
     - name: Run ruff (Linting)
       run: uv run ruff check .
 
