@@ -6,8 +6,9 @@ repos:
     -   id: end-of-file-fixer       # 파일 끝에 빈 줄 1개만 남기기
     -   id: check-yaml              # yaml 문법 검사
     -   id: debug-statements        # 디버그 코드 제거 확인
-    -   id: double-quote-string-fixer # 문자열 따옴표 통일
-    -   id: name-tests-test         # 테스트 파일 이름 체크
+#    -   id: double-quote-string-fixer # 문자열 따옴표 통일
+    -   id: name-tests-test
+        args: [ "--pytest-test-first" ]        # 테스트 파일 이름 체크
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.15.1
