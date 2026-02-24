@@ -1,11 +1,25 @@
 from django.contrib.auth import authenticate
-from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from drf_spectacular.utils import extend_schema
+from rest_framework import serializers, status
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .serializers import RegisterSerializer, UserSerializer
+
+
+class LoginRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField()
+
+
+class LoginResponseSerializer(serializers.Serializer):
+    access = serializers.CharField()
+
+
+class RegisterResponseSerializer(serializers.Serializer):
+    detail = serializers.CharField()
 
 
 # 토큰 발급
@@ -15,7 +29,13 @@ def get_tokens_for_user(user):
 
 
 # 회원가입
+@extend_schema(
+    request=RegisterSerializer,
+    responses={201: RegisterResponseSerializer},
+)
 class RegisterView(APIView):
+    permission_classes = [AllowAny]
+
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -24,7 +44,13 @@ class RegisterView(APIView):
 
 
 # 로그인
+@extend_schema(
+    request=LoginRequestSerializer,
+    responses={200: LoginResponseSerializer, 401: RegisterResponseSerializer},
+)
 class LoginView(APIView):
+    permission_classes = [AllowAny]
+
     def post(self, request):
         email = request.data.get("email")
         password = request.data.get("password")
@@ -38,6 +64,10 @@ class LoginView(APIView):
 
 
 # 로그아웃
+@extend_schema(
+    request=None,
+    responses={200: RegisterResponseSerializer, 400: RegisterResponseSerializer},
+)
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -53,6 +83,7 @@ class LogoutView(APIView):
 
 
 # 내 정보 조회
+@extend_schema(responses=UserSerializer)
 class UserMeView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -62,6 +93,7 @@ class UserMeView(APIView):
 
 
 # 정보 수정
+@extend_schema(request=UserSerializer, responses=UserSerializer)
 class UserUpdateView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -73,6 +105,7 @@ class UserUpdateView(APIView):
 
 
 # 회원 탈퇴
+@extend_schema(responses={200: RegisterResponseSerializer})
 class UserDeleteView(APIView):
     permission_classes = [IsAuthenticated]
 
