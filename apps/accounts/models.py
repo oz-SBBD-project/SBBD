@@ -30,8 +30,8 @@ class Account(models.Model):
 
 class Transaction(models.Model):
     class TxType(models.TextChoices):
-        DEPOSIT = "DEPOSIT", "입금"
-        WITHDRAW = "WITHDRAW", "출금"
+        INCOME = "INCOME", "수입"
+        EXPENSE = "EXPENSE", "지출"
 
     class PaymentMethod(models.TextChoices):
         CASH = "CASH", "현금"
@@ -44,7 +44,7 @@ class Transaction(models.Model):
         related_name="transactions",
     )
 
-    tx_type = models.CharField(max_length=10, choices=TxType.choices)
+    tx_type = models.CharField(max_length=20, choices=TxType.choices)
     amount = models.DecimalField(max_digits=15, decimal_places=2)
 
     transaction_date = models.DateField()
