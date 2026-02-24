@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     "django_filters",
     "rest_framework",
     "apps.accounts",
+    "apps.transactions",
     "drf_spectacular",
     "rest_framework_simplejwt.token_blacklist",
 ]
