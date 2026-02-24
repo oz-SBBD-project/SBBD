@@ -26,7 +26,7 @@ dev = [
 
 [tool.ruff]
 # 한 줄의 최대 길이 (보통 88 또는 100 사용)
-line-length = 100
+line-length = 120
 
 # 검사할 규칙 설정 (E, F는 기본, I는 import 정렬)
 lint.select = ["E", "F", "I", "N", "UP"]
