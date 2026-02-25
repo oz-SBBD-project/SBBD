@@ -1,6 +1,5 @@
+from django.conf import settings
 from django.db import models
-
-from config import settings
 
 
 # 5. Analysis 모델

@@ -27,6 +27,8 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "apps.users",
     "rest_framework_simplejwt.token_blacklist",
+    "apps.analysis",
+    "apps.notification.apps.NotificationConfig",
 ]
 
 MIDDLEWARE = [
