@@ -17,12 +17,12 @@ class TransactionService:
         tx_type = data["tx_type"]
         amount = data["amount"]
 
-        if tx_type == Transaction.TxType.WITHDRAW:
-            if account.balance < amount:
-                raise ValidationError("Insufficient balance")
+        if tx_type == Transaction.TxType.EXPENSE:
             account.balance = F("balance") - amount
-        else:
+        elif tx_type == Transaction.TxType.INCOME:
             account.balance = F("balance") + amount
+        else:
+            raise ValidationError("Invalid tx_type")
 
         account.save(update_fields=["balance", "updated_at"])
 
@@ -35,7 +35,7 @@ class TransactionService:
         account = Account.objects.select_for_update().get(id=tx.account_id, user=user)
 
         # reverse balance
-        if tx.tx_type == Transaction.TxType.WITHDRAW:
+        if tx.tx_type == Transaction.TxType.EXPENSE:
             account.balance = F("balance") + tx.amount
         else:
             account.balance = F("balance") - tx.amount
@@ -49,7 +49,7 @@ class TransactionService:
         account = Account.objects.select_for_update().get(id=tx.account_id, user=user)
 
         # 1) revert old
-        if tx.tx_type == Transaction.TxType.WITHDRAW:
+        if tx.tx_type == Transaction.TxType.EXPENSE:
             account.balance = F("balance") + tx.amount
         else:
             account.balance = F("balance") - tx.amount
@@ -63,12 +63,12 @@ class TransactionService:
         if new_amount <= 0:
             raise ValidationError("amount must be positive")
 
-        if new_type == Transaction.TxType.WITHDRAW:
-            if account.balance < new_amount:
-                raise ValidationError("Insufficient balance")
+        if new_type == Transaction.TxType.EXPENSE:
             account.balance = F("balance") - new_amount
-        else:
+        elif new_type == Transaction.TxType.INCOME:
             account.balance = F("balance") + new_amount
+        else:
+            raise ValidationError("Invalid tx_type")
 
         account.save(update_fields=["balance", "updated_at"])
 

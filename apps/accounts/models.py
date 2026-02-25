@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.conf import settings
 from django.db import models
 
@@ -11,7 +13,7 @@ class Account(models.Model):
 
     account_name = models.CharField(max_length=30)
     account_number = models.CharField(max_length=30)
-    balance = models.DecimalField(max_digits=15, decimal_places=2, default=0)
+    balance = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal("0"))
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -29,6 +31,8 @@ class Account(models.Model):
 
 
 class Transaction(models.Model):
+    objects = models.Manager()
+
     class TxType(models.TextChoices):
         INCOME = "INCOME", "수입"
         EXPENSE = "EXPENSE", "지출"
