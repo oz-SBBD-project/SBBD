@@ -2,6 +2,7 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+from celery.schedules import crontab
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -27,6 +28,9 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "apps.users",
     "rest_framework_simplejwt.token_blacklist",
+    "apps.analysis",
+    "django_celery_results",
+    "django_celery_beat",
 ]
 
 MIDDLEWARE = [
@@ -90,5 +94,21 @@ SIMPLE_JWT = {
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
 }
+
+
+CELERY_RESULT_BACKEND = "django-db"  # 장고 DB를 결과 저장소로 사용
+CELERY_CACHE_BACKEND = "default"
+CELERY_BROKER_URL = "sqla+postgresql://SBDD:1q2w3e4r@localhost:5433/SBDD"
+CELERY_BROKER_TRANSPORT_OPTIONS = {}
+CELERY_BEAT_SCHEDULE = {
+    "run-analysis-every-monday": {
+        "task": "apps.analysis.tasks.run_weekly_analysis_all_users",
+        "schedule": crontab(hour=0, minute=0, day_of_week="monday"),  # 매주 월요일 자정
+    },
+}
+
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 AUTH_USER_MODEL = "users.User"
