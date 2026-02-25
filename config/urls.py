@@ -27,6 +27,8 @@ urlpatterns = [
     path("redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
     path("api/users/", include("apps.users.urls")),
     path("api/", include("apps.accounts.urls")),
+    path("api/analysis/", include("apps.analysis.urls")),
+    path("notifications/", include("apps.notification.urls")),
 ]
 
 # 2. DEBUG 모드일 때만 Debug Toolbar 경로 추가

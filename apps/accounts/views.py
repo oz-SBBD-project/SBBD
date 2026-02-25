@@ -1,7 +1,12 @@
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import OpenApiParameter, extend_schema
+from drf_spectacular.utils import (
+    OpenApiExample,
+    OpenApiParameter,
+    extend_schema,
+)
 from rest_framework import mixins, viewsets
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from .models import Account, Transaction
 from .serializers import (
@@ -34,8 +39,10 @@ class AccountViewSet(
 
 class TransactionViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
-    queryset = Transaction.objects.select_related("account")
+    http_method_names = ["get", "post", "patch", "delete", "head", "options"]
 
+    # queryset은 get_queryset에서 결정하므로 굳이 클래스 변수로 둘 필요 없음
+    # (import 시점 평가 문제도 피함)
     def get_queryset(self):
         qs = Transaction.objects.filter(account__user=self.request.user).select_related("account")
 
@@ -69,6 +76,50 @@ class TransactionViewSet(viewsets.ModelViewSet):
             return TransactionUpdateSerializer
         return TransactionReadSerializer
 
+    # helper
+    def get_response(self, data, status_code=200):
+        return Response(data, status=status_code)
+
+    @extend_schema(
+        examples=[
+            OpenApiExample(
+                "Create Transaction Request",
+                value={
+                    "account_id": 7,
+                    "tx_type": "INCOME",
+                    "amount": "46542.40",
+                    "transaction_date": "2026-02-25",
+                    "payment_method": "CASH",
+                    "counterparty": "string",
+                    "description": "string",
+                },
+                request_only=True,
+            ),
+            OpenApiExample(
+                "Create Transaction Response",
+                value={
+                    "id": 1,
+                    "account": {
+                        "id": 7,
+                        "account_name": "string",
+                        "account_number": "string",
+                        "balance": "46542.40",
+                        "created_at": "2026-02-25T17:41:48.598770+09:00",
+                        "updated_at": "2026-02-25T17:42:17.031684+09:00",
+                    },
+                    "tx_type": "INCOME",
+                    "amount": "46542.40",
+                    "transaction_date": "2026-02-25",
+                    "payment_method": "CASH",
+                    "counterparty": "string",
+                    "description": "string",
+                    "created_at": "2026-02-25T17:42:17.034149+09:00",
+                    "updated_at": "2026-02-25T17:42:17.034179+09:00",
+                },
+                response_only=True,
+            ),
+        ]
+    )
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -83,11 +134,6 @@ class TransactionViewSet(viewsets.ModelViewSet):
         out = TransactionReadSerializer(tx, context={"request": request})
         return self.get_response(out.data, status_code=201)
 
-    def destroy(self, request, *args, **kwargs):
-        tx = self.get_object()
-        TransactionService.delete_transaction(request.user, tx=tx)
-        return self.get_response(None, status_code=204)
-
     def partial_update(self, request, *args, **kwargs):
         tx = self.get_object()
         serializer = self.get_serializer(tx, data=request.data, partial=True)
@@ -98,23 +144,55 @@ class TransactionViewSet(viewsets.ModelViewSet):
             tx=tx,
             data=serializer.validated_data,
         )
+
         out = TransactionReadSerializer(tx, context={"request": request})
-        return self.get_response(out.data, status_code=200)
-
-    # helper
-    def get_response(self, data, status_code=200):
-        from rest_framework.response import Response
-
-        return Response(data, status=status_code)
+        return self.get_response(out.data, status_code=201)
 
     @extend_schema(
         parameters=[
-            OpenApiParameter("account_id", OpenApiTypes.INT, required=False),
-            OpenApiParameter("tx_type", OpenApiTypes.STR, required=False),
-            OpenApiParameter("start_date", OpenApiTypes.DATE, required=False),
-            OpenApiParameter("end_date", OpenApiTypes.DATE, required=False),
-            OpenApiParameter("min_amount", OpenApiTypes.NUMBER, required=False),
-            OpenApiParameter("max_amount", OpenApiTypes.NUMBER, required=False),
+            OpenApiParameter(
+                name="account_id",
+                type=OpenApiTypes.INT,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description="계좌 ID (예: 7)",
+            ),
+            OpenApiParameter(
+                name="tx_type",
+                type=OpenApiTypes.STR,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description="거래 유형 (INCOME 또는 EXPENSE)",
+                enum=["INCOME", "EXPENSE"],
+            ),
+            OpenApiParameter(
+                name="start_date",
+                type=OpenApiTypes.DATE,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description="조회 시작 날짜 (형식: YYYY-MM-DD)",
+            ),
+            OpenApiParameter(
+                name="end_date",
+                type=OpenApiTypes.DATE,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description="조회 종료 날짜 (형식: YYYY-MM-DD)",
+            ),
+            OpenApiParameter(
+                name="min_amount",
+                type=OpenApiTypes.NUMBER,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description="최소 금액 (예: 10000)",
+            ),
+            OpenApiParameter(
+                name="max_amount",
+                type=OpenApiTypes.NUMBER,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description="최대 금액 (예: 50000)",
+            ),
         ]
     )
     def list(self, request, *args, **kwargs):
