@@ -27,9 +27,11 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "apps.users",
     "rest_framework_simplejwt.token_blacklist",
+    "debug_toolbar",
 ]
 
 MIDDLEWARE = [
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -92,3 +94,7 @@ SIMPLE_JWT = {
 }
 
 AUTH_USER_MODEL = "users.User"
+
+INTERNAL_IPS = [
+    "127.0.0.1",
+]

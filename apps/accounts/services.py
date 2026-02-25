@@ -17,7 +17,7 @@ class TransactionService:
         tx_type = data["tx_type"]
         amount = data["amount"]
 
-        if tx_type == Transaction.TxType.WITHDRAW:
+        if tx_type == Transaction.TxType.WITHDRAWAL:
             if account.balance < amount:
                 raise ValidationError("Insufficient balance")
             account.balance = F("balance") - amount
