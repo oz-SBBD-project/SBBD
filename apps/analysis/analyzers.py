@@ -69,6 +69,6 @@ class TransactionAnalyzer:
             end_date=self.end_date,
             result_image_url=image_url,  # 필드명 수정됨
             status="SUCCESS" if image_url else "FAIL",
-            description=f"{self.user.username}님의 {self.period_type} 분석 결과입니다.",
+            description=f"{self.user.name}님의 {self.period_type} 분석 결과입니다.",
         )
         return analysis_obj
