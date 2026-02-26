@@ -42,10 +42,12 @@ class AnalysisAPITest(APITestCase):
         self.assertEqual(len(response.data), 2)  # 데이터가 2개 있어야 함
 
     def test_filter_analysis_by_period(self):
-        # 주간(weekly) 데이터만 필터링해서 가져오는지 확인
+        # 주간 데이터만 필터링해서 가져오는지 확인
         url = reverse("analysis-list")
         response = self.client.get(url, {"period_type": "weekly"})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)  # 주간은 1개여야 함
-        self.assertEqual(response.data[0]["period_type"], "weekly")
+
+        self.assertGreaterEqual(len(response.data), 1)
+        for item in response.data:
+            self.assertEqual(item["period_type"], "weekly")

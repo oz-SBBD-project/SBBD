@@ -26,11 +26,17 @@ def run_weekly_analysis_all_users():
             analysis_instance = analyzer.run()
 
             if analysis_instance:
+                # 메시지 생성
+                start_str = start_date.strftime("%Y-%m-%d")
+                end_str = end_date.strftime("%Y-%m-%d")
+                msg = f"📊 {user.name}님, {start_str} ~ {end_str} 분석 보고서가 도착했습니다!"
+
+                # [수정] Notification을 만들 때 analysis=analysis_instance를 추가!
                 Notification.objects.create(
                     user=user,
-                    message=f"📊 {user.name}님, {start_date.strftime('%Y-%m-%d')} ~ "
-                    f"{end_date.strftime('%Y-%m-%d')} 분석 보고서가 도착했습니다!",
+                    message=msg,
                     is_read=False,
+                    analysis=analysis_instance,  # 이 줄이 포인트입니다!
                 )
                 created_count += 1
         except Exception as e:
