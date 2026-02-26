@@ -18,6 +18,7 @@ from .serializers import (
 from .services import TransactionService
 
 
+@extend_schema(tags=["accounts"])
 class AccountViewSet(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
@@ -37,6 +38,7 @@ class AccountViewSet(
     # update/partial_update 없음 => "수정 불가" 충족
 
 
+@extend_schema(tags=["transactions"])
 class TransactionViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     http_method_names = ["get", "post", "patch", "delete", "head", "options"]

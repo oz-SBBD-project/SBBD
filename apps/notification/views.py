@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from drf_spectacular.utils import extend_schema
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -7,6 +8,7 @@ from .models import Notification
 from .serializers import NotificationSerializer
 
 
+@extend_schema(tags=["notifications"])
 class UnreadNotificationListView(generics.ListAPIView):
     """
     [미션] 요청한 사용자의 '읽지 않은 알림'만 조회
@@ -21,6 +23,7 @@ class UnreadNotificationListView(generics.ListAPIView):
         return Notification.objects.filter(user=self.request.user, is_read=False)
 
 
+@extend_schema(tags=["notifications"])
 class NotificationReadView(APIView):
     """
     [미션] 알림 읽음 처리

@@ -30,6 +30,7 @@ def get_tokens_for_user(user):
 
 # 회원가입
 @extend_schema(
+    tags=["users"],
     request=RegisterSerializer,
     responses={201: RegisterResponseSerializer},
 )
@@ -45,6 +46,7 @@ class RegisterView(APIView):
 
 # 로그인
 @extend_schema(
+    tags=["users"],
     request=LoginRequestSerializer,
     responses={200: LoginResponseSerializer, 401: RegisterResponseSerializer},
 )
@@ -65,6 +67,7 @@ class LoginView(APIView):
 
 # 로그아웃
 @extend_schema(
+    tags=["users"],
     request=None,
     responses={200: RegisterResponseSerializer, 400: RegisterResponseSerializer},
 )
@@ -83,7 +86,7 @@ class LogoutView(APIView):
 
 
 # 내 정보 조회
-@extend_schema(responses=UserSerializer)
+@extend_schema(tags=["users"], responses=UserSerializer)
 class UserMeView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -93,7 +96,7 @@ class UserMeView(APIView):
 
 
 # 정보 수정
-@extend_schema(request=UserSerializer, responses=UserSerializer)
+@extend_schema(tags=["users"], request=UserSerializer, responses=UserSerializer)
 class UserUpdateView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -105,7 +108,7 @@ class UserUpdateView(APIView):
 
 
 # 회원 탈퇴
-@extend_schema(responses={200: RegisterResponseSerializer})
+@extend_schema(tags=["users"], responses={200: RegisterResponseSerializer})
 class UserDeleteView(APIView):
     permission_classes = [IsAuthenticated]
 

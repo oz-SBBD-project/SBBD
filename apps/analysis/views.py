@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -8,6 +9,7 @@ from .serializers import AnalysisSerializer
 from .tasks import run_weekly_analysis_all_users
 
 
+@extend_schema(tags=["analysis"])
 class AnalysisListView(generics.ListAPIView):
     serializer_class = AnalysisSerializer
     # permission_classes = [permissions.IsAuthenticated]
@@ -23,6 +25,7 @@ class AnalysisListView(generics.ListAPIView):
         return queryset.order_by("-created_at")
 
 
+@extend_schema(tags=["analysis"])
 class AnalysisTriggerView(APIView):
     """
     POST 요청을 보내면 즉시 주간 분석 비서(Celery Task)를 호출합니다.
