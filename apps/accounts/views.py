@@ -5,7 +5,7 @@ from drf_spectacular.utils import (
     extend_schema,
 )
 from rest_framework import mixins, viewsets
-from rest_framework.authentication import BasicAuthentication, SessionAuthentication
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -26,7 +26,7 @@ class AccountViewSet(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication]
     serializer_class = AccountSerializer
     permission_classes = [IsAuthenticated]
 
@@ -40,7 +40,7 @@ class AccountViewSet(
 
 
 class TransactionViewSet(viewsets.ModelViewSet):
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]
     http_method_names = ["get", "post", "patch", "delete", "head", "options"]
 
