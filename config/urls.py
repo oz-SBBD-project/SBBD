@@ -15,6 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
@@ -29,3 +30,11 @@ urlpatterns = [
     path("api/analysis/", include("apps.analysis.urls")),
     path("notifications/", include("apps.notification.urls")),
 ]
+
+# 2. DEBUG 모드일 때만 Debug Toolbar 경로 추가
+if settings.DEBUG:
+    import debug_toolbar
+
+    urlpatterns += [
+        path("__debug__/", include(debug_toolbar.urls)),
+    ]
